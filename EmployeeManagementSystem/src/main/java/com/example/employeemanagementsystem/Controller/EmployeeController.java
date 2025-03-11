@@ -85,10 +85,14 @@ public class EmployeeController {
 
     // 6. Get Employees by Age Range
     @GetMapping("/get-by-age")
-    public ResponseEntity getByAge(@RequestParam int age) {
+    public ResponseEntity getByAge(@RequestParam int minAge, @RequestParam int maxAge) {
+        if (minAge <= 0 || maxAge <= 0 || minAge > maxAge) {
+            return ResponseEntity.status(400).body(new ApiResponse("Invalid age range: minAge must be less than maxAge and both must be positive"));
+        }
+
         ArrayList<Employees> employeesByAeg = new ArrayList<>();
         for (Employees e : employees) {
-            if (e.getAge() == age) {
+            if (e.getAge() >= minAge && e.getAge() <= maxAge) {
                 employeesByAeg.add(e);
             }
         }
@@ -126,12 +130,31 @@ public class EmployeeController {
 
     // 9. Promote Employee
     @GetMapping("/promote-employee")
+//    public ResponseEntity promoteEmployee(@RequestParam int id_supervisor, @RequestParam int id_employee) {
+//        for (Employees e : employees) {
+//            if (e.getId() == id_supervisor && e.getPosition().equals("Supervisor")) {
+//                if (e.getId() == id_employee && e.getAge() <= 30 && e.isOnLeave() == false) {
+//                    e.setPosition("Supervisor");
+//                    return ResponseEntity.status(200).body(new ApiResponse("You have been promoted to Supervisor."));
+//                }
+//            }
+//        }
+//        return ResponseEntity.status(404).body(new ApiResponse("Employee not found!"));
+//    }
+
     public ResponseEntity promoteEmployee(@RequestParam int id_supervisor, @RequestParam int id_employee) {
         for (Employees e : employees) {
             if (e.getId() == id_supervisor && e.getPosition().equals("Supervisor")) {
-                if (e.getId() == id_employee && e.getAge() <= 30 && e.isOnLeave() == false) {
-                    e.setPosition("Supervisor");
-                    return ResponseEntity.status(200).body(new ApiResponse("You have been promoted to Supervisor."));
+                for (Employees emp : employees) {
+                    if (emp.getId() == id_employee) {
+                        if (emp.getAge() >= 30 && emp.isOnLeave() == false) {
+                            emp.setPosition("Supervisor");
+                            return ResponseEntity.status(200).body(new ApiResponse("You have been promoted to Supervisor."));
+                        } else {
+                            return ResponseEntity.status(401).body(new ApiResponse("Employee does not meet the promotion criteria."));
+
+                        }
+                    }
                 }
             }
         }

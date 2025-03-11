@@ -17,7 +17,7 @@ public class Employees {
     private int id;
 
     @NotNull(message = "The 'Name' must be NOT Null")
-    @Size(min = 2, max = 200, message = "The 'Name' must be more than 4 characters")
+    @Size(min = 4, max = 200, message = "The 'Name' must be more than 4 characters")
     @Pattern(regexp = "^[a-zA-Z]+$", message = "The 'Name' Must contain only characters ")
     private String name;
 
@@ -42,7 +42,7 @@ public class Employees {
 
     @NotNull(message = "The 'hire Date' must be NOT Null")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent
+    @PastOrPresent
     private LocalDate hireDate;
 
     @NotNull(message = "The 'Annual Leave' must be NOT Null")
